@@ -62,8 +62,10 @@
 
                 </div>
                 
-                <button class="btn btn-ghost rounded-btn" id="iniziaRicerca" onclick="IniziaRicerca()">inizia ricerca</button>
-                
+                <button hidden class="btn btn-ghost rounded-btn" id="iniziaRicerca" onclick="IniziaRicerca()">inizia ricerca</button>
+                <button hidden id='bStop' class="btn btn-ghost rounded-btn"  onclick="clickStop()">stop</button>
+                <button hidden id='bSkip' class="btn btn-ghost rounded-btn"  onclick="clickSkip()">skip</button>
+
                     <select class="select select-bordered w-full max-w-xs" id="selectAlgoritmo">
                         <option value="0" disabled selected>Algoritmo</option>
                         <option value="1">Dijkstra</option>

@@ -19,6 +19,11 @@ let sleep = 0
 let moltEuristica = 0
 
 
+let stop = false
+let skip = false
+let inCorsoRicerca = false//cambia quando e` in corso la ricerca
+
+
 $(document).on({
     keydown:function(event){
         //console.log('chiave: '+event.key)
@@ -54,6 +59,8 @@ $(function(){
             $('#moltEur').attr('hidden', true)
         }
     })
+    $('#selectAlgoritmo').val(0)
+    $('#iniziaRicerca').attr('hidden', false)
 })
 
 function makeGrid(colonne, righe){
@@ -161,17 +168,38 @@ function cambiaGriglia(){
 }
 
 function IniziaRicerca(){
+    
     let algoritmo = $('#selectAlgoritmo').val()
-    if (algoritmo==0){
+    console.log(algoritmo)
+    if (algoritmo==0 || algoritmo==null){
         alert('selezionare un algoritmo')
         return
     }
     let grafo = creaGrafo()//implementare i muri
+    rimuoviRicerca()
+    cambiaBottoniRicerca(true)
     if(algoritmo==1){//dijkstra
+        stop = false
+        skip = false
+        inCorsoRicerca = false
         dijkstra(grafo)
     }else if(algoritmo==2){//A*
         //TODO
     }
+}
+
+function cambiaBottoniRicerca(bool){//false=non iniziato true=iniziato 
+    $('#iniziaRicerca').attr('hidden', bool)
+    $('#bStop').attr('hidden', !bool)
+    $('#bSkip').attr('hidden', !bool)
+}
+
+function clickStop(){
+    stop = !stop
+}
+
+function clickSkip(){
+    skip=!skip
 }
 
 function rimuoviMuri(){
@@ -250,6 +278,12 @@ function rimuoviRicerca(){
     $('.cellaPercorso').attr('class', 'celleGriglia')
 }
 
+function settaVarGlobaliFineRicerca(){
+    //set a default delle variabili
+    inCorsoRicerca=false
+    skip = false
+}
+
 async function dijkstra(grafo){//inizio e` come var globale, e` async per permettere lo sleep utilizzato dopo
     console.log(grafo)
     let dist = new Map()
@@ -264,7 +298,10 @@ async function dijkstra(grafo){//inizio e` come var globale, e` async per permet
     let node
     while(daEsplorare.size!=0){
         console.log('entrato')
-        if(sleep!=0){
+
+        while(stop)await new Promise(r => setTimeout(r, 1000));//attesa con lo stop
+
+        if(sleep!=0 && !skip){// se lo skip e' true (si vuole skippare) allora non entra nello sleep e va dritto dritto alla fine
             await new Promise(r => setTimeout(r, sleep));
         }
         
@@ -290,12 +327,16 @@ async function dijkstra(grafo){//inizio e` come var globale, e` async per permet
     }
     //mostra il percorso trovato
     let index = fine
-    while(precedente.get(index)!=null && precedente.get(index)!=inizio){
+    while(precedente.get(index)!=null && precedente.get(index)!=inizio){// si potrebbe mettere anche qui lo sleep
         $(`#${precedente.get(index)}`).attr('class', 'cellaPercorso')
         index = precedente.get(index)
     }
-
+    if(precedente.get(index)!=inizio)alert('dal punto di inizio non si puo` raggiungere\n il punto di fine')
+    settaVarGlobaliFineRicerca()
+    cambiaBottoniRicerca(false)
 }
+
+
 
 function minDistNode(dist, daEsplorare){
     let min = Infinity
