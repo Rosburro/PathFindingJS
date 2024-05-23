@@ -79,6 +79,7 @@
 <!-- fine nav -->
 
 <div class="md:container md:mx-auto contGrafo">
+    
     <table align="center" class="contenitoreGriglia">
         <thead id="indexColonna"></thead>
         <tbody id="griglia">
@@ -86,12 +87,19 @@
     </table>
   </div>
 
-    </div>
-
-
     <script>
         // $(). 
+        $.get('paginaACaso.html/asdasdsd', {dati:"diaad"}, function(dati){
+            console.log("sadasd")
+        })
     </script>
+
+    <!--numero nodi attraversati-->
+    <div class="toast" id="contNodiAtt" hidden>
+        <div class="alert alert-info">
+            <span id="nodiAttraversati"></span>
+        </div>
+    </div>
     
 </body>
 </html>

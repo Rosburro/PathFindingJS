@@ -284,6 +284,8 @@ function settaVarGlobaliFineRicerca(){
     skip = false
 }
 
+
+//dijkstra
 async function dijkstra(grafo){//inizio e` come var globale, e` async per permettere lo sleep utilizzato dopo
     console.log(grafo)
     let dist = new Map()
@@ -327,16 +329,18 @@ async function dijkstra(grafo){//inizio e` come var globale, e` async per permet
     }
     //mostra il percorso trovato
     let index = fine
+    let cont =0
     while(precedente.get(index)!=null && precedente.get(index)!=inizio){// si potrebbe mettere anche qui lo sleep
         $(`#${precedente.get(index)}`).attr('class', 'cellaPercorso')
         index = precedente.get(index)
+        cont++
     }
+    $('#contNodiAtt').attr('hidden', false)
+    $('#nodiAttraversati').html('nodi attraversati: '+cont)
     if(precedente.get(index)!=inizio)alert('dal punto di inizio non si puo` raggiungere\n il punto di fine')
     settaVarGlobaliFineRicerca()
     cambiaBottoniRicerca(false)
 }
-
-
 
 function minDistNode(dist, daEsplorare){
     let min = Infinity
@@ -349,6 +353,8 @@ function minDistNode(dist, daEsplorare){
     }
     return index
 }
+
+//fine dijkstra
 
 function AStar(grafo){
 
