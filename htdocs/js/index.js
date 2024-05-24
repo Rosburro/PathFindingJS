@@ -328,18 +328,7 @@ async function dijkstra(grafo){//inizio e` come var globale, e` async per permet
         }
     }
     //mostra il percorso trovato
-    let index = fine
-    let cont =0
-    while(precedente.get(index)!=null && precedente.get(index)!=inizio){// si potrebbe mettere anche qui lo sleep
-        $(`#${precedente.get(index)}`).attr('class', 'cellaPercorso')
-        index = precedente.get(index)
-        cont++
-    }
-    $('#contNodiAtt').attr('hidden', false)
-    $('#nodiAttraversati').html('nodi attraversati: '+cont)
-    if(precedente.get(index)!=inizio)alert('dal punto di inizio non si puo` raggiungere\n il punto di fine')
-    settaVarGlobaliFineRicerca()
-    cambiaBottoniRicerca(false)
+    ricostruisciPercorso(precedente)
 }
 
 function minDistNode(dist, daEsplorare){
@@ -356,9 +345,79 @@ function minDistNode(dist, daEsplorare){
 
 //fine dijkstra
 
-function AStar(grafo){
+function AStar(grafo){//inizio e fine globali
+    //var per usi generali dell'algoritmo
+    let nodiVisitati = new Set()
+    let nodiDaVisitare = new Set()
+    let dist = new Map()//da inizializzare (distanza dall'inizio)
+    let vieneDa= new Map()//come from
+    let hScore = new Map()//score ricavato dall'euristica (distanza ipotetica dalla fine)
+    let fScore = new Map()//totale distanza dalla fine
+
+    
+
+    for(let i=0;i<grafo.size;i++){
+        nodiDaVisitare.add(i)
+        dist.set(i, Infinity)
+        vieneDa.set(i, null)// da vedere
+        hScore.set(i, Infinity)
+        fScore.set(i, Infinity) 
+    }
+
+    while(nodiDaVisitare.size!=0){
+        console.log('ebtrati')
+        node = minDistNode(fScore, nodiDaVisitare)
+        if(node==fine){
+            ricostruisciPercorso(vieneDa)//far si che si visualizzi il percorso
+            return true//riuscito a trovare il percorso
+        }else if(node==-1){
+            break//non c'e` soluzione
+        }
+        nodiDaVisitare.delete(node)
+        nodiVisitati.add(node)
+        for(let vicino of grafo.get(node)){
+            if(nodiVisitati.has(vicino)){//se il nodo e` gia` stato visitato allora si va avanti
+                continue
+            }
+            let tentativoGScore = disto.get(node)+1//distanza tra x e y e` sempre 1
+            let tentativoMigliore
+            if(!nodiDaVisitare.has(vicino)){
+                nodiDaVisitare.add(vicino)
+                tentativoMigliore=true
+            }else if(tentativoGScore<dist.get(vicino)){
+                tentativoMigliore=true
+            }else tentativoMigliore=false
+
+            if (tentativoMigliore){
+                vieneDa.set(vicino, node)
+                dist.set(node, tentativoGScore)
+                hScore.set(vicino, heuristic(vicino))
+                fScore.set(vicino, parseInt(tentativoGScore)+parseInt(hScore.get(vicino)))
+
+            }
+        }
+    }
+    settaVarGlobaliFineRicerca()
+    cambiaBottoniRicerca(false)
+    return false//non riuscito a trovare il percorso
 
 }
 
+function ricostruisciPercorso(precedente){//fine data come global
+    let index = fine
+    let cont =0
+    while(precedente.get(index)!=null && precedente.get(index)!=inizio){// si potrebbe mettere anche qui lo sleep
+        $(`#${precedente.get(index)}`).attr('class', 'cellaPercorso')
+        index = precedente.get(index)
+        cont++
+    }
+    $('#contNodiAtt').attr('hidden', false)
+    $('#nodiAttraversati').html('nodi attraversati: '+cont)
+    if(precedente.get(index)!=inizio)alert('dal punto di inizio non si puo` raggiungere\n il punto di fine')
+    settaVarGlobaliFineRicerca()
+    cambiaBottoniRicerca(false)
+}
 
-
+function heuristic(index){//la fine e` globale
+    return 0
+}
