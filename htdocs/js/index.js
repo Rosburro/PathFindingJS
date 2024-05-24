@@ -13,10 +13,11 @@ let rPressed = false // se viene premuta la M allora si tolgono i muri
 //todo: settare queste variabili
 let inizio = -1
 let fine = -1
+let coordinateFine = []
 let muri = []
 
 let sleep = 0
-let moltEuristica = 0
+let moltEuristica = 1
 
 
 let stop = false
@@ -84,6 +85,8 @@ function makeGrid(colonne, righe){
             bottone.on({
                 mousedown:function(event){
                     //se clicco con lo stesso tasto per cui ha gia` le proprieta` allora torna normale
+                    //se una ricerca e` in corso allora non cambia nulla ed esce
+                    if(inCorsoRicerca)return
                     let classe = $(this).attr('class')
                     //cambio di classe in 'negativo'
                     if ((classe=='cellaInizio' && event.which==1)){
@@ -129,7 +132,9 @@ function makeGrid(colonne, righe){
                     // console.log('prevent')
                 },
                 mouseenter:function(event){
-                    if($(this).attr('class')=='cellaFine' || $(this).attr('class')=='cellaInizio')return
+                    //se la cella e` gia settata come inizio,fine o e` in corso una ricerca: non crea il muro 
+                    if($(this).attr('class')=='cellaFine' || $(this).attr('class')=='cellaInizio' || inCorsoRicerca)return
+                    //cambio
                     if(mPressed && $(this).attr('class')!='cellaMuro'){
                         $(this).attr('class', 'cellaMuro')
                         muri.push(parseInt($(this).attr('id')))
@@ -161,6 +166,8 @@ function BCliccato(event){
 }
 
 function cambiaGriglia(){
+    //se e` in corso una ricerca non ridisegna la griglia
+    if(inCorsoRicerca)return
     colonne = $('#colonne').val()
     righe = $('#righe').val()
 
@@ -181,10 +188,17 @@ function IniziaRicerca(){
     if(algoritmo==1){//dijkstra
         stop = false
         skip = false
-        inCorsoRicerca = false
+        inCorsoRicerca = true
         dijkstra(grafo)
     }else if(algoritmo==2){//A*
         //TODO
+        stop=false
+        skip=false
+        inCorsoRicerca = true
+        let ris = AStar(grafo)
+        if(!ris){
+            console.log('soluzione non trovata')
+        }
     }
 }
 
@@ -213,8 +227,8 @@ function cambiaInpostazioni(){
         console.log('entrato dentro il cambio dello')
         sleep=$('#sleep').val()*1000//trasformazione in millisecondi
     }
-    if($('#moltEur').text()!=''){
-        //todo
+    if($('#moltEur').val()!=''){
+        moltEuristica=$('#moltEur').val()
     }
 }
 
@@ -308,10 +322,7 @@ async function dijkstra(grafo){//inizio e` come var globale, e` async per permet
         }
         
         node = minDistNode(dist, daEsplorare)
-        if(
-            $(`#${node}`).attr('class')!='cellaInizio' &&
-            $(`#${node}`).attr('class')!='cellaFine'
-        ) $(`#${node}`).attr('class','cellaVisitata')
+        nodoVisitato(node)
 
         if(node==-1){
             console.log('entrato dentro -1')
@@ -331,6 +342,14 @@ async function dijkstra(grafo){//inizio e` come var globale, e` async per permet
     ricostruisciPercorso(precedente)
 }
 
+function nodoVisitato(node){
+    if(
+        $(`#${node}`).attr('class')!='cellaInizio' &&
+        $(`#${node}`).attr('class')!='cellaFine'
+    ) $(`#${node}`).attr('class','cellaVisitata')
+}
+
+
 function minDistNode(dist, daEsplorare){
     let min = Infinity
     let index = -1
@@ -345,13 +364,17 @@ function minDistNode(dist, daEsplorare){
 
 //fine dijkstra
 
-function AStar(grafo){//inizio e fine globali
+async function AStar(grafo){//inizio e fine globali
+    coordinateFine = conversioneCoordinate(fine)//serve dopo per calcolare l'heuristica
     //var per usi generali dell'algoritmo
     let nodiVisitati = new Set()
+    nodiVisitati.add(inizio)
     let nodiDaVisitare = new Set()
     let dist = new Map()//da inizializzare (distanza dall'inizio)
-    let vieneDa= new Map()//come from
-    let hScore = new Map()//score ricavato dall'euristica (distanza ipotetica dalla fine)
+    let vieneDa= new Map()//come from`
+    //si puo` fare a meno della mappa e della variabile hScore
+    // let hScore = new Map()//precedente
+    //let hScore = parseInt(0)//score ricavato dall'euristica (distanza ipotetica dalla fine), dovrebbe essere una mappa l'euristica ma in questo caso non serve e quindi diventa una semplice variabile
     let fScore = new Map()//totale distanza dalla fine
 
     
@@ -360,26 +383,40 @@ function AStar(grafo){//inizio e fine globali
         nodiDaVisitare.add(i)
         dist.set(i, Infinity)
         vieneDa.set(i, null)// da vedere
-        hScore.set(i, Infinity)
+        // hScore.set(i, Infinity)
         fScore.set(i, Infinity) 
     }
 
+    dist.set(inizio, 0)
+    // hScore.set(inizio, heuristic(inizio))
+    fScore.set(inizio, heuristic(inizio))
+
+    console.log('entratro')
     while(nodiDaVisitare.size!=0){
-        console.log('ebtrati')
-        node = minDistNode(fScore, nodiDaVisitare)
+        // debugger
+        // console.log('ebtrati')
+        while(stop)await new Promise(r => setTimeout(r, 1000));//attesa con lo stop
+
+        if(sleep!=0 && !skip){// se lo skip e' true (si vuole skippare) allora non entra nello sleep e va dritto dritto alla fine
+            await new Promise(r => setTimeout(r, sleep));
+        } 
+
+        let node = minDistNode(fScore, nodiDaVisitare)
         if(node==fine){
             ricostruisciPercorso(vieneDa)//far si che si visualizzi il percorso
             return true//riuscito a trovare il percorso
         }else if(node==-1){
+            console.log('entrato dentro l\'if')
             break//non c'e` soluzione
         }
+        nodoVisitato(node)
         nodiDaVisitare.delete(node)
         nodiVisitati.add(node)
         for(let vicino of grafo.get(node)){
             if(nodiVisitati.has(vicino)){//se il nodo e` gia` stato visitato allora si va avanti
                 continue
             }
-            let tentativoGScore = disto.get(node)+1//distanza tra x e y e` sempre 1
+            let tentativoGScore = dist.get(node)+1//distanza tra x e y e` sempre 1
             let tentativoMigliore
             if(!nodiDaVisitare.has(vicino)){
                 nodiDaVisitare.add(vicino)
@@ -390,9 +427,9 @@ function AStar(grafo){//inizio e fine globali
 
             if (tentativoMigliore){
                 vieneDa.set(vicino, node)
-                dist.set(node, tentativoGScore)
-                hScore.set(vicino, heuristic(vicino))
-                fScore.set(vicino, parseInt(tentativoGScore)+parseInt(hScore.get(vicino)))
+                dist.set(vicino, tentativoGScore)//si setta la distanza
+                // hScore.set(vicino, heuristic(vicino))//si calcola l'euristica
+                fScore.set(vicino, parseInt(tentativoGScore)+parseInt(heuristic(vicino)))//si calcola la distanza finale
 
             }
         }
@@ -418,6 +455,23 @@ function ricostruisciPercorso(precedente){//fine data come global
     cambiaBottoniRicerca(false)
 }
 
-function heuristic(index){//la fine e` globale
-    return 0
+function heuristic(index){//la fine e` globale, applicare il moltiplicatore
+    index = conversioneCoordinate(index)
+    // console.log('euristica: '+Math.sqrt(
+    //     (Math.pow((parseInt(index[0])-parseInt(coordinateFine[0])), 2)
+    //     +
+    //     Math.pow((parseInt(index[1])-parseInt(coordinateFine[1])), 2) )
+    // ) 
+    // )
+    return Math.sqrt(
+        (Math.pow((parseInt(index[0])-parseInt(coordinateFine[0])), 2)
+        +
+        Math.pow((parseInt(index[1])-parseInt(coordinateFine[1])), 2) )
+        )*moltEuristica
+    
+}
+
+function conversioneCoordinate(id){//da id a [x, y]; fine data coordinate: global
+    console.log([id%colonne, Math.floor(id/colonne)])
+    return [id%colonne, Math.floor(id/colonne)]
 }
