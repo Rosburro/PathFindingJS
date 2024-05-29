@@ -217,8 +217,10 @@ function clickSkip(){
 }
 
 function rimuoviMuri(){
-    $('.cellaMuro').attr('class', 'celleGriglia')
-    muri=[]
+    if(!inCorsoRicerca){
+        $('.cellaMuro').attr('class', 'celleGriglia')
+        muri=[]
+    }
 }
 
 function cambiaInpostazioni(){
@@ -288,8 +290,10 @@ function collegamentiNodo(grafo, index){
 }
 
 function rimuoviRicerca(){
-    $('.cellaVisitata').attr('class', 'celleGriglia')
-    $('.cellaPercorso').attr('class', 'celleGriglia')
+    if(!inCorsoRicerca){
+        $('.cellaVisitata').attr('class', 'celleGriglia')
+        $('.cellaPercorso').attr('class', 'celleGriglia')
+    }
 }
 
 function settaVarGlobaliFineRicerca(){
