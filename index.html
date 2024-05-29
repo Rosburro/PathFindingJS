@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- si potrebbe metter una tabella che fa vedere le impostazioni attuali della pagina: tempo, moltEuristica,... -->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>home</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.11.1/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="style/index.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="js/index.js"></script>
+    
+</head>
+<body>
+    <div>
+        <div class="navbar bg-base-300 rounded-box">
+            <div class="flex-1 px-2 lg:flex-none">
+              <a class="text-lg font-bold">Algoritmi di ricerca</a>
+            </div> 
+            
+            <div class="flex justify-end flex-1 px-2">
+                
+              <div class="flex items-stretch">
+                
+                <div class="dropdown dropdown-end">
+
+                    <div tabindex="0" role="button" class="btn btn-ghost rounded-btn">cambia griglia</div>
+
+                    <ul tabindex="0" class="menu dropdown-content z-[1] p-2 shadow bg-base-100 rounded-box w-52 mt-4">
+
+                        <li><input type="text" id='colonne' placeholder="n colonne" class="input input-bordered input-info input-sm w-full max-w-xs" /></li> 
+                        <li> <input type="text" id='righe' placeholder="n righe" class="input input-bordered input-info input-sm w-full max-w-xs" /></li>
+                        <li><button class="btn btn-ghost rounded-btn font-bold text-2g" id="bCambiaGriglia" onclick="cambiaGriglia()">cambia</button></li>
+                    
+                    </ul>
+
+                </div>
+                <div class="dropdown dropdown-end">
+
+                    <div tabindex="0" role="button" class="btn btn-ghost rounded-btn">pulitori</div>
+
+                    <ul tabindex="0" class="menu dropdown-content z-[1] p-2 shadow bg-base-100 rounded-box w-52 mt-4">
+
+                        <li><button class="btn btn-ghost rounded-btn font-bold text-2g" id="bRimuoviMuri" onclick="rimuoviMuri()">rimuovi muri</button></li> 
+                        <li><button class="btn btn-ghost rounded-btn font-bold text-2g" id="bRimuoviMuri" onclick="rimuoviRicerca()">rimuovi ricerca</button></li>
+                    
+                    </ul>
+
+                </div>
+                <div class="dropdown dropdown-end">
+
+                    <div tabindex="0" role="button" class="btn btn-ghost rounded-btn">impostazioni</div>
+
+                    <ul tabindex="0" class="menu dropdown-content z-[1] p-2 shadow bg-base-100 rounded-box w-52 mt-4">
+
+                        <li><input type="number" id='sleep' placeholder="attesa a mossa [secondi]" class="input input-bordered input-info input-sm w-full max-w-xs" /></li> 
+                        <li> <input type="number" id='moltEur' hidden placeholder="molt euristica" class="input input-bordered input-info input-sm w-full max-w-xs" /></li>
+                        <li><button class="btn btn-ghost rounded-btn font-bold text-2g" id="bCambiaGriglia" onclick="cambiaInpostazioni()">cambia</button></li>
+                    
+                    </ul>
+
+                </div>
+                
+                <button hidden class="btn btn-ghost rounded-btn" id="iniziaRicerca" onclick="IniziaRicerca()">inizia ricerca</button>
+                <button hidden id='bStop' class="btn btn-ghost rounded-btn"  onclick="clickStop()">stop</button>
+                <button hidden id='bSkip' class="btn btn-ghost rounded-btn"  onclick="clickSkip()">skip</button>
+
+                    <select class="select select-bordered w-full max-w-xs" id="selectAlgoritmo">
+                        <option value="0" disabled selected>Algoritmo</option>
+                        <option value="1">Dijkstra</option>
+                        <option value="2">A*</option>
+                      </select>
+                </div>
+
+              </div>
+
+            </div>
+<!-- fine nav -->
+
+<div class="md:container md:mx-auto contGrafo">
+    
+    <table align="center" class="contenitoreGriglia">
+        <thead id="indexColonna"></thead>
+        <tbody id="griglia">
+        </tbody>
+    </table>
+  </div>
+
+    <script>
+        // $(). 
+        $.get('paginaACaso.html/asdasdsd', {dati:"diaad"}, function(dati){
+            console.log("sadasd")
+        })
+    </script>
+
+    <!--numero nodi attraversati-->
+    <div class="toast" id="contNodiAtt" hidden>
+        <div class="alert alert-info">
+            <span id="nodiAttraversati"></span>
+        </div>
+    </div>
+    
+</body>
+</html>
