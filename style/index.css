@@ -1,4 +1,9 @@
 
+.contenitoreGenerale{
+    transform: scale(0.1);
+    transition: 0.5s;
+}
+
 .celleGriglia{
     background-color: white;
 
@@ -53,3 +58,6 @@ td,th{
     margin-top: 4vh;
 }
 
+.imgInput{
+    all: unset;
+}

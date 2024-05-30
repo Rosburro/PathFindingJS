@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dracula">
 <!-- si potrebbe metter una tabella che fa vedere le impostazioni attuali della pagina: tempo, moltEuristica,... -->
 
 <head>
@@ -8,6 +8,7 @@
     <title>home</title>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.11.1/dist/full.min.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="style/index.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0 , maximum-scale=1, user-scalable=yes">
     <script src="https://cdn.tailwindcss.com"></script>
     
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
@@ -15,7 +16,7 @@
     
 </head>
 <body>
-    <div>
+    <div id="contenitoreGenerale">
         <div class="navbar bg-base-300 rounded-box">
             <div class="flex-1 px-2 lg:flex-none">
               <a class="text-lg font-bold">Algoritmi di ricerca</a>
@@ -58,6 +59,7 @@
 
                         <li><input type="number" id='sleep' placeholder="attesa a mossa [secondi]" class="input input-bordered input-info input-sm w-full max-w-xs" /></li> 
                         <li> <input type="number" id='moltEur' hidden placeholder="molt euristica" class="input input-bordered input-info input-sm w-full max-w-xs" /></li>
+                        <li> <input type="file" placeholder="lab da img" class="imgInput input input-bordered input-warning input-sm w-full max-w-xs" value=""/></li>
                         <li><button class="btn btn-ghost rounded-btn font-bold text-2g" id="bCambiaGriglia" onclick="cambiaInpostazioni()">cambia</button></li>
                     
                     </ul>

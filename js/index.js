@@ -6,6 +6,10 @@ let colonne=30
 //900:25=[new thing]:x
 const rifGrid = 900
 const sizeB = 15 //size bottone per 30x30
+//navigator.userAgent.indexOf("windows")
+
+let isPc = isPC()
+console.log('ispc: '+isPc)
 
 let mPressed = false// se viene premuta la m allora si aggiungono i muri
 let rPressed = false // se viene premuta la M allora si tolgono i muri
@@ -24,6 +28,10 @@ let stop = false
 let skip = false
 let inCorsoRicerca = false//cambia quando e` in corso la ricerca
 
+
+function isPC(){
+    return !/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+}
 
 $(document).on({
     keydown:function(event){
@@ -83,10 +91,47 @@ function makeGrid(colonne, righe){
             bottone = $(`<button class='celleGriglia' style="width: ${size}px;height:${size}px" id='${i*colonne+j}'></button>`)
             cella = $(`<td></td>`)
             bottone.on({
+                
+                touchstart:function(e){
+                    if(inCorsoRicerca)return
+                    let classe = $(this).attr('class')
+                    
+                    if(classe=='cellaMuro' ){
+                        
+                        muri.splice(muri.indexOf(parseInt($(this).attr('id'))), 1)
+
+                        if(fine!=-1){
+                            $(`#${fine}`).attr('class', 'celleGriglia')
+                        }
+                        $(this).attr('class', 'cellaFine')
+                        fine=parseInt($(this).attr('id'))
+                        return
+                    }
+                    if ((classe=='cellaInizio')){
+                        $(this).attr('class', 'celleGriglia')
+                        inizio=-1
+                        return
+                    }
+                    if((classe=='cellaFine')){
+                        fine=-1
+                        if(inizio!=-1){
+                            // console.log('entrato: '+inizio)
+                            $(`#${inizio}`).attr('class', 'celleGriglia')
+                        }
+                        $(this).attr('class', 'cellaInizio')
+                        inizio=parseInt($(this).attr('id'))
+                        return
+                    }
+                    console.log('left click')
+                        $(this).attr('class', 'cellaMuro')
+                        muri.push(parseInt($(this).attr('id')))
+
+                },
                 mousedown:function(event){
                     //se clicco con lo stesso tasto per cui ha gia` le proprieta` allora torna normale
                     //se una ricerca e` in corso allora non cambia nulla ed esce
-                    if(inCorsoRicerca)return
+                    
+                    if(inCorsoRicerca || !isPc)return
                     let classe = $(this).attr('class')
                     //cambio di classe in 'negativo'
                     if ((classe=='cellaInizio' && event.which==1)){
@@ -478,4 +523,9 @@ function heuristic(index){//la fine e` globale, applicare il moltiplicatore
 function conversioneCoordinate(id){//da id a [x, y]; fine data coordinate: global
     console.log([id%colonne, Math.floor(id/colonne)])
     return [id%colonne, Math.floor(id/colonne)]
+}
+
+
+function parseImg(){
+    
 }
