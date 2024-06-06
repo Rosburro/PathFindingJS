@@ -28,6 +28,9 @@ let stop = false
 let skip = false
 let inCorsoRicerca = false//cambia quando e` in corso la ricerca
 
+//segna se o meno si e` abilitata l'opzione del parsing delle img
+let invioImg = true// 
+
 
 function isPC(){
     return !/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
@@ -36,7 +39,7 @@ function isPC(){
 $(document).on({
     keydown:function(event){
         //console.log('chiave: '+event.key)
-        
+
         if (event.key=='m'){
             //console.log('entrato true')
             mPressed=true
@@ -91,13 +94,13 @@ function makeGrid(colonne, righe){
             bottone = $(`<button class='celleGriglia' style="width: ${size}px;height:${size}px" id='${i*colonne+j}'></button>`)
             cella = $(`<td></td>`)
             bottone.on({
-                
+
                 touchstart:function(e){
                     if(inCorsoRicerca)return
                     let classe = $(this).attr('class')
-                    
+
                     if(classe=='cellaMuro' ){
-                        
+
                         muri.splice(muri.indexOf(parseInt($(this).attr('id'))), 1)
 
                         if(fine!=-1){
@@ -130,7 +133,7 @@ function makeGrid(colonne, righe){
                 mousedown:function(event){
                     //se clicco con lo stesso tasto per cui ha gia` le proprieta` allora torna normale
                     //se una ricerca e` in corso allora non cambia nulla ed esce
-                    
+
                     if(inCorsoRicerca || !isPc)return
                     let classe = $(this).attr('class')
                     //cambio di classe in 'negativo'
@@ -194,11 +197,11 @@ function makeGrid(colonne, righe){
             //mettere l'on al bottone
             cella.append(bottone)
             righa.append(cella)
-            
+
         }
         $('#griglia').append(righa)
     }
-    
+
 }
 
 
@@ -220,7 +223,7 @@ function cambiaGriglia(){
 }
 
 function IniziaRicerca(){
-    
+
     let algoritmo = $('#selectAlgoritmo').val()
     console.log(algoritmo)
     if (algoritmo==0 || algoritmo==null){
@@ -270,6 +273,7 @@ function rimuoviMuri(){
 
 function cambiaInpostazioni(){
     //sleep=$('#sleep').val()*1000
+    readImg(document.getElementById('imgGetter'))
     if($('#sleep').val()!=''){
         console.log('entrato dentro il cambio dello')
         sleep=$('#sleep').val()*1000//trasformazione in millisecondi
@@ -369,7 +373,7 @@ async function dijkstra(grafo){//inizio e` come var globale, e` async per permet
         if(sleep!=0 && !skip){// se lo skip e' true (si vuole skippare) allora non entra nello sleep e va dritto dritto alla fine
             await new Promise(r => setTimeout(r, sleep));
         }
-        
+
         node = minDistNode(dist, daEsplorare)
         nodoVisitato(node)
 
@@ -426,7 +430,7 @@ async function AStar(grafo){//inizio e fine globali
     //let hScore = parseInt(0)//score ricavato dall'euristica (distanza ipotetica dalla fine), dovrebbe essere una mappa l'euristica ma in questo caso non serve e quindi diventa una semplice variabile
     let fScore = new Map()//totale distanza dalla fine
 
-    
+
 
     for(let i=0;i<grafo.size;i++){
         nodiDaVisitare.add(i)
@@ -517,7 +521,7 @@ function heuristic(index){//la fine e` globale, applicare il moltiplicatore
         +
         Math.pow((parseInt(index[1])-parseInt(coordinateFine[1])), 2) )
         )*moltEuristica
-    
+
 }
 
 function conversioneCoordinate(id){//da id a [x, y]; fine data coordinate: global
@@ -526,6 +530,52 @@ function conversioneCoordinate(id){//da id a [x, y]; fine data coordinate: globa
 }
 
 
-function parseImg(){
+function parseImg(img) {
+    let contImg = document.createElement('canvas');
+    let ctx = contImg.getContext('2d');
+    contImg.width = img.width;
+    contImg.height = img.height;
+    ctx.drawImage(img, 0, 0);
+
+    // Obtaining the pixel value
+    let px = ctx.getImageData(10, 10, 1, 1).data; // x, y, width, height
+    console.log(`rosso: ${px[0]}, verde: ${px[1]}, blu: ${px[2]}, opacita: ${px[3]}`);
     
+    //cambiare il val delle text
+    cambiaGriglia()
+
+}
+
+function getPx(ctx, x, y){
+    return ctx.getImageData(x, y, 1, 1).data
+}
+
+function readImg(input) {// da finire assolutamente
+    if (input.files && input.files[0]) {//input.files[0] e` la nostra img
+        console.log('input'+input.files[0])
+        //dichiaro img
+        let immagine = new Image()
+
+        var reader = new FileReader();
+        reader.readAsDataURL(input.files[0]);//prende l'oggetto e lo parsa
+        reader.onload = function (e) {
+
+            immagine.src=e.target.result//si mette all'oggetto che img ha l'oggetto
+
+            console.log(e.target.result)
+            $('#imgLabInviata')//show img
+                .attr('src', e.target.result)
+                .width(200)
+                .height(200)
+        };
+        immagine.onload = (e) => parseImg(immagine)// si riuchiama il parse dell'img solo dopo che l'immagine e` stata creata completamente nell'oggetto
+    }
+}
+
+
+function cambioImgParsing(){
+    invioImg=!invioImg
+    if(invioImg){
+        $('#imgGetter').show()
+    }else $('#imgGetter').hide()
 }
