@@ -1,4 +1,3 @@
-
 .contenitoreGenerale{
     transform: scale(0.1);
     transition: 0.5s;
@@ -60,4 +59,8 @@ td,th{
 
 .imgInput{
     all: unset;
+}
+
+.imgLabInviata{
+    position: fixed;
 }

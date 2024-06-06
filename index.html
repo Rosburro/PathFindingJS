@@ -10,10 +10,10 @@
     <link rel="stylesheet" href="style/index.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0 , maximum-scale=1, user-scalable=yes">
     <script src="https://cdn.tailwindcss.com"></script>
-    
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="js/index.js"></script>
-    
+
 </head>
 <body>
     <div id="contenitoreGenerale">
@@ -46,17 +46,24 @@
                         <li>4 tocchi: normale</li>
                     </ul>
                     </details>
-                    
+                </li>
+                <li style="align-content: center;" >
+                    <div class="form-control" style="text-align: center;">
+                        <label class="cursor-pointer label">
+                        <span class="label-text">invio img</span>
+                        <input type="checkbox"  onchange="cambioImgParsing()" class="checkbox checkbox-accent" />
+                        </label>
+                  </div>
                 </li>
                 </ul>
               </div>
             </div> 
-            
-            
+
+
             <div class="flex justify-end flex-1 px-2">
-                
+
               <div class="flex items-stretch">
-                
+
                 <div class="dropdown dropdown-end">
 
                     <div tabindex="0" role="button" class="btn btn-ghost rounded-btn">cambia griglia</div>
@@ -66,7 +73,7 @@
                         <li><input type="text" id='colonne' placeholder="n colonne" class="input input-bordered input-info input-sm w-full max-w-xs" /></li> 
                         <li> <input type="text" id='righe' placeholder="n righe" class="input input-bordered input-info input-sm w-full max-w-xs" /></li>
                         <li><button class="btn btn-ghost rounded-btn font-bold text-2g" id="bCambiaGriglia" onclick="cambiaGriglia()">cambia</button></li>
-                    
+
                     </ul>
 
                 </div>
@@ -78,7 +85,7 @@
 
                         <li><button class="btn btn-ghost rounded-btn font-bold text-2g" id="bRimuoviMuri" onclick="rimuoviMuri()">rimuovi muri</button></li> 
                         <li><button class="btn btn-ghost rounded-btn font-bold text-2g" id="bRimuoviMuri" onclick="rimuoviRicerca()">rimuovi ricerca</button></li>
-                    
+
                     </ul>
 
                 </div>
@@ -90,13 +97,13 @@
 
                         <li><input type="number" id='sleep' placeholder="attesa a mossa [secondi]" class="input input-bordered input-info input-sm w-full max-w-xs" /></li> 
                         <li> <input type="number" id='moltEur' hidden placeholder="molt euristica" class="input input-bordered input-info input-sm w-full max-w-xs" /></li>
-                        <li> <input type="file" placeholder="lab da img" class="imgInput input input-bordered input-warning input-sm w-full max-w-xs" value=""/></li>
+                        <li> <input type="file" id="imgGetter" placeholder="lab da img" class="imgInput input input-bordered input-warning input-sm w-full max-w-xs" value=""/></li>
                         <li><button class="btn btn-ghost rounded-btn font-bold text-2g" id="bCambiaGriglia" onclick="cambiaInpostazioni()">cambia</button></li>
-                    
+
                     </ul>
 
                 </div>
-                
+
                 <button hidden class="btn btn-ghost rounded-btn" id="iniziaRicerca" onclick="IniziaRicerca()">inizia ricerca</button>
                 <button hidden id='bStop' class="btn btn-ghost rounded-btn"  onclick="clickStop()">stop</button>
                 <button hidden id='bSkip' class="btn btn-ghost rounded-btn"  onclick="clickSkip()">skip</button>
@@ -106,15 +113,17 @@
                         <option value="1">Dijkstra</option>
                         <option value="2">A*</option>
                       </select>
+
                 </div>
 
               </div>
 
             </div>
+            <img id="imgLabInviata" class="imgLabInviata" src="#" alt=""/>
 <!-- fine nav -->
 
 <div class="md:container md:mx-auto contGrafo">
-    
+
     <table align="center" class="contenitoreGriglia">
         <thead id="indexColonna"></thead>
         <tbody id="griglia">
@@ -122,12 +131,6 @@
     </table>
   </div>
 
-    <script>
-        // $(). 
-        $.get('paginaACaso.html/asdasdsd', {dati:"diaad"}, function(dati){
-            console.log("sadasd")
-        })
-    </script>
 
     <!--numero nodi attraversati-->
     <div class="toast" id="contNodiAtt" hidden>
@@ -135,6 +138,6 @@
             <span id="nodiAttraversati"></span>
         </div>
     </div>
-    
+
 </body>
 </html>
